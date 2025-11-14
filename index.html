@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart City Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <!-- ====================
+         HEADER SECTION
+         ==================== -->
+    <header>
+      <div class="header-content">
+        <div class="header-left">
+          <div class="header-accent"></div>
+          <h1>Bengaluru Smart City Dashboard</h1>
+        </div>
+        <div class="header-right">
+          <div class="header-btn time-btn">
+            <span id="currentTime">00:00:00 am</span>
+          </div>
+          <div
+            class="header-btn moon-btn"
+            id="themeToggle"
+            onclick="toggleTheme()"
+          >
+            <span class="moon-icon" id="themeIcon">🌙</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Error Message (hidden by default) -->
+    <div id="errorMessage" class="error-message"></div>
+
+    <!-- ====================
+         DASHBOARD GRID
+         ==================== -->
+    <main class="dashboard">
+      <!-- Loading Spinner -->
+      <div id="loadingSpinner" class="loading-spinner" style="display: none">
+        <div class="spinner"></div>
+        <p>Loading data...</p>
+      </div>
+
+      <!-- Left Side: Text/Info Only -->
+      <div class="card info-card">
+        <h2>📊 Information</h2>
+        <!-- Weather Info (Top) -->
+        <div class="info-section">
+          <h3>🌡️ Weather Information</h3>
+          <div id="weatherInfo" class="card-content">
+            <p class="placeholder">Loading weather data...</p>
+          </div>
+        </div>
+        <!-- Air Quality Info (Bottom) -->
+        <div class="info-section">
+          <h3>🌬️ Air Quality</h3>
+          <div id="airQualityInfo" class="card-content">
+            <p class="placeholder">Loading air quality data...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side: Both Pie Charts -->
+      <div class="card charts-card">
+        <h2>📈 Data Charts</h2>
+        <div class="pie-charts-section">
+          <div class="pie-chart-wrapper">
+            <h3>Air Quality Composition</h3>
+            <div class="chart-container-small">
+              <canvas id="airQualityPieChart"></canvas>
+            </div>
+          </div>
+          <div class="pie-chart-wrapper">
+            <h3>Weather Conditions</h3>
+            <div class="chart-container-small">
+              <canvas id="weatherPieChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Line Charts Container (Side by Side) -->
+      <div class="card line-charts-card">
+        <h2>📈 24-Hour Trends</h2>
+        <div class="line-charts-section">
+          <div class="line-chart-wrapper">
+            <h3>Temperature Trend</h3>
+            <div class="chart-container-medium">
+              <canvas id="temperatureLineChart"></canvas>
+            </div>
+          </div>
+          <div class="line-chart-wrapper">
+            <h3>PM2.5 Trend</h3>
+            <div class="chart-container-medium">
+              <canvas id="airQualityLineChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart Container -->
+      <div class="card chart-card">
+        <h2>📊 Data Visualization</h2>
+        <div class="chart-container">
+          <canvas id="dataChart"></canvas>
+        </div>
+      </div>
+    </main>
+
+    <!-- ====================
+         FOOTER SECTION
+         ==================== -->
+    <footer>
+      <p>
+        Data sources:
+        <a href="https://openweathermap.org/api" target="_blank"
+          >OpenWeatherMap</a
+        >
+        | <a href="https://openaq.org/" target="_blank">OpenAQ</a>
+      </p>
+      <p class="footer-note">
+        Built for learning API integration and data visualization
+      </p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+  </body>
+</html>
