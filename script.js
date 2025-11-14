@@ -1,149 +1,53 @@
 // ====================
-// CONFIGURATION SECTION
+// CONFIGURATION
 // ====================
-/* 
- * CONCEPT: CONSTANTS AND VARIABLES
- * - const: Creates immutable (unchangeable) variables
- * - let: Creates mutable (changeable) variables
- * - Global scope: Variables declared outside functions are accessible everywhere
- */
-
-// API Configuration - Using const because these URLs never change
-const OPENWEATHER_API_KEY = ""; // Empty string - Open-Meteo doesn't need API key
+// Using Open-Meteo API - 100% Free, No API Key Needed!
+const OPENWEATHER_API_KEY = ""; // Not needed for Open-Meteo
 const OPENWEATHER_BASE_URL = "https://api.open-meteo.com/v1/forecast";
 const AIR_QUALITY_BASE_URL = "https://air-quality-api.open-meteo.com/v1/air-quality";
 const GEOCODING_BASE_URL = "https://geocoding-api.open-meteo.com/v1/search";
 
-// Application Configuration
-const CITY_NAME = "Bangalore"; // Fixed city for this dashboard
+// Fixed city - Bangalore
+const CITY_NAME = "Bangalore";
 
-/* 
- * CONCEPT: GLOBAL VARIABLES
- * - These variables are accessible from any function in the file
- * - Using 'let' because chart instances will change (be reassigned)
- * - Initialized as 'null' (represents "no value")
- */
-let dataChart = null;           // Main bar chart instance
-let airQualityPieChart = null;  // Air quality pie chart instance
-let airQualityLineChart = null; // Air quality line chart instance
-let weatherPieChart = null;     // Weather conditions pie chart instance
-let temperatureLineChart = null; // Temperature trend line chart instance
+// Chart.js instances (global variables)
+let dataChart = null;
+let airQualityPieChart = null;
+let airQualityLineChart = null;
+let weatherPieChart = null;
+let temperatureLineChart = null;
 
 // ====================
-// INITIALIZATION SECTION
+// INITIALIZATION
 // ====================
-/* 
- * CONCEPT: EVENT LISTENERS AND DOM MANIPULATION
- * - document: Represents the entire HTML page
- * - addEventListener(): Listens for specific events (like page loading)
- * - DOMContentLoaded: Event that fires when HTML is fully loaded
- * - Anonymous function: Function without a name, defined inline
- */
-
-// Wait for HTML page to fully load before running JavaScript
+// When page loads, fetch data for Bangalore
 document.addEventListener("DOMContentLoaded", function () {
-  /* 
-   * CONCEPT: CONSOLE LOGGING
-   * - console.log(): Prints messages to browser's developer console
-   * - Useful for debugging and tracking program flow
-   */
   console.log("🚀 Dashboard loaded! Fetching data for Bangalore...");
-  
-  /* 
-   * CONCEPT: FUNCTION CALLS
-   * - Functions are called by writing functionName()
-   * - These functions are defined later in the file
-   */
-  loadTheme();      // Load user's preferred theme (dark/light)
-  fetchCityData();  // Get weather and air quality data
-  updateTime();     // Show current time
-  
-  /* 
-   * CONCEPT: SETINTERVAL
-   * - setInterval(): Repeatedly calls a function at specified intervals
-   * - 1000 milliseconds = 1 second
-   * - Updates time display every second
-   */
+  // Load saved theme preference
+  loadTheme();
+  // Load Bangalore data automatically
+  fetchCityData();
+  // Update time display
+  updateTime();
   setInterval(updateTime, 1000);
 });
 
-/* 
- * CONCEPT: FUNCTION DECLARATION
- * - function keyword creates a reusable block of code
- * - JSDoc comments document what the function does
- * - Functions can be called from anywhere in the code
- */
 /**
  * Updates the current time display in header
- * CONCEPTS DEMONSTRATED: DOM manipulation, Date object, string methods
  */
 function updateTime() {
-  /* 
-   * CONCEPT: DOM ELEMENT SELECTION
-   * - document.getElementById(): Finds HTML element by its ID attribute
-   * - Returns null if element doesn't exist
-   */
   const timeElement = document.getElementById("currentTime");
-  
-  /* 
-   * CONCEPT: CONDITIONAL STATEMENTS (IF)
-   * - if (condition): Executes code only if condition is true
-   * - Prevents errors if element doesn't exist
-   */
   if (timeElement) {
-    /* 
-     * CONCEPT: DATE OBJECT
-     * - new Date(): Creates object representing current date/time
-     * - Built-in JavaScript object for working with dates
-     */
     const now = new Date();
-    
-    /* 
-     * CONCEPT: OBJECT METHODS
-     * - Methods are functions that belong to objects
-     * - getHours(), getMinutes(), getSeconds() extract time components
-     */
-    const hours = now.getHours();     // 0-23 format
-    const minutes = now.getMinutes(); // 0-59
-    const seconds = now.getSeconds(); // 0-59
-    
-    /* 
-     * CONCEPT: STRING METHODS AND TYPE CONVERSION
-     * - String(): Converts number to string
-     * - padStart(): Adds characters to beginning of string
-     * - Ensures two-digit format (e.g., "09" instead of "9")
-     */
-    const minutesStr = String(minutes).padStart(2, "0");
-    const secondsStr = String(seconds).padStart(2, "0");
-
-    /* 
-     * CONCEPT: TERNARY OPERATOR
-     * - condition ? valueIfTrue : valueIfFalse
-     * - Shorter way to write simple if-else statements
-     */
+    const hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
     const ampm = hours >= 12 ? "pm" : "am";
-    
-    /* 
-     * CONCEPT: MATHEMATICAL OPERATORS
-     * - % (modulo): Returns remainder after division
-     * - || (logical OR): Returns first truthy value
-     * - Converts 24-hour to 12-hour format
-     */
-    const displayHours = hours % 12 || 12; // 0 becomes 12
-    
-    /* 
-     * CONCEPT: TEMPLATE LITERALS
-     * - Backticks (`) allow embedding variables in strings
-     * - ${variable} syntax inserts variable values
-     * - More readable than string concatenation
-     */
-    const timeString = `${String(displayHours).padStart(2, "0")}:${minutesStr}:${secondsStr} ${ampm}`;
-    
-    /* 
-     * CONCEPT: DOM CONTENT MANIPULATION
-     * - textContent: Sets the text inside an HTML element
-     * - Updates what user sees on the webpage
-     */
+    const displayHours = hours % 12 || 12;
+    const timeString = `${String(displayHours).padStart(
+      2,
+      "0"
+    )}:${minutes}:${seconds} ${ampm}`;
     timeElement.textContent = timeString;
   }
 }
@@ -151,99 +55,43 @@ function updateTime() {
 // ====================
 // MAIN FUNCTION: FETCH ALL CITY DATA
 // ====================
-/* 
- * CONCEPT: ASYNC/AWAIT AND PROMISES
- * - async: Makes function return a Promise
- * - await: Pauses function until Promise resolves
- * - Allows writing asynchronous code that looks synchronous
- */
 /**
  * Main function that fetches weather and air quality data for Bangalore
- * CONCEPTS DEMONSTRATED: async/await, API calls, error handling, destructuring
+ * Called automatically when page loads
  */
 async function fetchCityData() {
-  /* 
-   * CONCEPT: FUNCTION CALLS WITH PARAMETERS
-   * - Functions can accept input values (parameters)
-   * - true/false are boolean values
-   */
-  showLoading(true);  // Show spinner (true = show)
-  hideError();        // Hide any previous error messages
-  clearDashboard();   // Clear old data from screen
+  // Step 1: Show loading spinner
+  showLoading(true);
+  hideError();
 
-  /* 
-   * CONCEPT: TRY-CATCH-FINALLY
-   * - try: Code that might fail
-   * - catch: Handles errors if they occur
-   * - finally: Always runs, regardless of success/failure
-   */
+  // Step 2: Clear previous data
+  clearDashboard();
+
   try {
-    // Step 1: Get city coordinates
+    // Step 3: First get city coordinates (needed for both weather and air quality)
     console.log("📍 Step 1: Fetching coordinates for", CITY_NAME);
-    
-    /* 
-     * CONCEPT: TEMPLATE LITERALS AND URL ENCODING
-     * - Template literals: Use backticks for string interpolation
-     * - encodeURIComponent(): Makes text safe for URLs
-     * - Handles special characters in city names
-     */
-    const geoUrl = `${GEOCODING_BASE_URL}?name=${encodeURIComponent(CITY_NAME)}&count=1`;
+    const geoUrl = `${GEOCODING_BASE_URL}?name=${encodeURIComponent(
+      CITY_NAME
+    )}&count=1`;
     console.log("🌐 Geocoding API URL:", geoUrl);
-    
-    /* 
-     * CONCEPT: FETCH API AND AWAIT
-     * - fetch(): Makes HTTP requests to APIs
-     * - await: Waits for the request to complete
-     * - Returns a Response object
-     */
     const geoResponse = await fetch(geoUrl);
 
-    /* 
-     * CONCEPT: ERROR HANDLING AND HTTP STATUS
-     * - response.ok: true if HTTP status is 200-299
-     * - throw: Creates an error that stops execution
-     * - Error object: Built-in way to represent errors
-     */
     if (!geoResponse.ok) {
       throw new Error(`Geocoding API error: ${geoResponse.status}`);
     }
 
-    /* 
-     * CONCEPT: JSON PARSING
-     * - .json(): Converts response text to JavaScript object
-     * - await: Required because parsing is asynchronous
-     */
     const geoData = await geoResponse.json();
     console.log("✅ Geocoding API Response:", geoData);
 
-    /* 
-     * CONCEPT: OBJECT PROPERTY ACCESS AND VALIDATION
-     * - Dot notation: object.property
-     * - Array length: array.length
-     * - Logical operators: ! (NOT), || (OR)
-     */
     if (!geoData.results || geoData.results.length === 0) {
       throw new Error("City not found. Please check the city name.");
     }
 
-    /* 
-     * CONCEPT: DESTRUCTURING ASSIGNMENT
-     * - Extracts properties from objects into variables
-     * - const { prop1, prop2 } = object;
-     * - Cleaner than: const latitude = geoData.results[0].latitude;
-     */
     const { latitude, longitude } = geoData.results[0];
     console.log(`📍 Coordinates found: ${latitude}, ${longitude}`);
 
-    // Step 2: Fetch all data in parallel
+    // Step 4: Fetch weather and air quality data in parallel using coordinates
     console.log("🌡️ Step 2: Fetching weather and air quality data...");
-    
-    /* 
-     * CONCEPT: PROMISE.ALL AND ARRAY DESTRUCTURING
-     * - Promise.all(): Runs multiple async operations simultaneously
-     * - Array destructuring: [var1, var2] = array;
-     * - Much faster than running requests one by one
-     */
     const [
       weatherData,
       airQualityData,
@@ -259,13 +107,13 @@ async function fetchCityData() {
     console.log("✅ Weather Data Received:", weatherData);
     console.log("✅ Air Quality Data Received:", airQualityData);
 
-    // Step 3: Display all the data on webpage
+    // Step 4: Display the data
     console.log("📊 Step 3: Displaying data on dashboard...");
-    displayWeatherInfo(weatherData);           // Show weather in UI
-    displayAirQuality(airQualityData);         // Show air quality in UI
-    createChart(weatherData, airQualityData);  // Create main bar chart
+    displayWeatherInfo(weatherData);
+    displayAirQuality(airQualityData);
+    createChart(weatherData, airQualityData);
 
-    // Step 4: Create additional charts
+    // Step 5: Create new charts
     console.log("📈 Step 4: Creating additional charts...");
     createAirQualityPieChart(airQualityData, hourlyAirQualityData);
     createAirQualityLineChart(hourlyAirQualityData);
@@ -273,109 +121,68 @@ async function fetchCityData() {
     createTemperatureLineChart(hourlyWeatherData);
 
     console.log("✅ Dashboard updated successfully!");
-    
   } catch (error) {
-    /* 
-     * CONCEPT: ERROR HANDLING
-     * - catch block runs if any error occurs in try block
-     * - console.error(): Logs errors (shows in red in console)
-     * - error.message: Gets the error description
-     */
+    // Step 5: Handle errors
     console.error("❌ Error fetching city data:", error);
     showError(
       error.message || "Failed to fetch data. Please try refreshing the page."
     );
   } finally {
-    /* 
-     * CONCEPT: FINALLY BLOCK
-     * - Always executes, whether try succeeds or catch runs
-     * - Perfect for cleanup tasks like hiding loading spinners
-     */
-    showLoading(false); // Hide spinner regardless of success/failure
+    // Step 6: Hide loading spinner
+    showLoading(false);
   }
 }
 
 // ====================
-// WEATHER DATA FUNCTIONS
+// SECTION: WEATHER DATA
 // ====================
-/* 
- * CONCEPT: FUNCTION PARAMETERS AND RETURN VALUES
- * - Parameters: Input values passed to functions
- * - Return: Output value sent back to caller
- * - JSDoc: Special comments that document parameter types
- */
+// Purpose: Fetch weather from Open-Meteo API (Free, No API Key!)
+// Input: city name (string)
+// Output: temperature, humidity, wind speed, description
 
 /**
- * Fetches weather data from Open-Meteo API using coordinates
- * CONCEPTS DEMONSTRATED: Parameters, API calls, object creation, Math methods
+ * Fetches weather data from Open-Meteo API using coordinates (Free, No API Key!)
+ * @param {number} latitude - Latitude of the city
+ * @param {number} longitude - Longitude of the city
+ * @param {object} geoResult - Geocoding result with city name and country
+ * @returns {object} Weather data object
  */
 async function fetchWeatherDataWithCoords(latitude, longitude, geoResult) {
   try {
-    /* 
-     * CONCEPT: QUERY PARAMETERS IN URLS
-     * - ? starts query parameters
-     * - & separates multiple parameters
-     * - API specifies what data we want (temperature, humidity, etc.)
-     */
+    // Get weather data using coordinates from real API
     const url = `${OPENWEATHER_BASE_URL}?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=auto`;
     console.log("🌡️ Weather API URL:", url);
-    
-    // Make HTTP request to weather API
     const response = await fetch(url);
     console.log("🌡️ Weather API Response Status:", response.status);
 
-    // Check if request was successful
     if (!response.ok) {
       throw new Error(`Weather API error: ${response.status}`);
     }
 
-    // Parse JSON response into JavaScript object
+    // Convert response to JSON - REAL API DATA ONLY
     const data = await response.json();
     console.log("🌡️ Weather API Raw Data:", data);
 
-    /* 
-     * CONCEPT: OBJECT CREATION AND RETURN
-     * - Creating object with specific properties
-     * - Math.round(): Rounds decimal numbers to integers
-     * - Function calls within object creation
-     * - Accessing nested object properties (data.current.temperature_2m)
-     */
+    // Return formatted data from real API
     return {
-      temperature: Math.round(data.current.temperature_2m),  // Round 23.7 to 24
-      description: getWeatherDescription(data.current.weather_code), // Convert code to text
-      humidity: data.current.relative_humidity_2m,           // Percentage
-      windSpeed: data.current.wind_speed_10m,               // Meters per second
-      cityName: geoResult.name,                             // From geocoding
-      country: geoResult.country_code,                      // Country code
+      temperature: Math.round(data.current.temperature_2m),
+      description: getWeatherDescription(data.current.weather_code),
+      humidity: data.current.relative_humidity_2m,
+      windSpeed: data.current.wind_speed_10m,
+      cityName: geoResult.name,
+      country: geoResult.country_code,
     };
   } catch (error) {
-    /* 
-     * CONCEPT: ERROR PROPAGATION
-     * - Re-throwing errors with additional context
-     * - Template literals in error messages
-     */
     throw new Error(`Failed to fetch weather data: ${error.message}`);
   }
 }
 
-/* 
- * CONCEPT: OBJECT LITERALS AND BRACKET NOTATION
- * - Object literal: { key: value } syntax
- * - Bracket notation: object[key] for dynamic property access
- * - Logical OR (||): Provides default value if key doesn't exist
- */
 /**
- * Converts Open-Meteo weather code to human-readable description
- * CONCEPTS DEMONSTRATED: Object literals, bracket notation, default values
+ * Converts Open-Meteo weather code to description
+ * @param {number} code - Weather code from Open-Meteo
+ * @returns {string} Weather description
  */
 function getWeatherDescription(code) {
-  /* 
-   * CONCEPT: OBJECT AS LOOKUP TABLE
-   * - Objects can store key-value pairs
-   * - Keys are weather codes (numbers)
-   * - Values are descriptions (strings)
-   * - More efficient than long if-else chains
-   */
   const codes = {
     0: "clear sky",
     1: "mainly clear",
@@ -399,34 +206,17 @@ function getWeatherDescription(code) {
     86: "heavy snow showers",
     95: "thunderstorm",
   };
-  
-  /* 
-   * CONCEPT: BRACKET NOTATION AND DEFAULT VALUES
-   * - codes[code]: Looks up description using weather code
-   * - || "unknown": If code not found, return "unknown"
-   * - Prevents undefined errors
-   */
   return codes[code] || "unknown";
 }
 
 /**
  * Displays weather information in the weather card
- * CONCEPTS DEMONSTRATED: DOM manipulation, template literals, innerHTML
+ * @param {object} data - Weather data object
  */
 function displayWeatherInfo(data) {
-  /* 
-   * CONCEPT: DOM ELEMENT SELECTION
-   * - getElementById(): Finds element by ID
-   * - Stores reference for manipulation
-   */
   const weatherInfoDiv = document.getElementById("weatherInfo");
 
-  /* 
-   * CONCEPT: INNERHTML AND TEMPLATE LITERALS
-   * - innerHTML: Sets HTML content inside element
-   * - Template literals: Multi-line strings with ${} interpolation
-   * - Creates structured HTML dynamically
-   */
+  // Create HTML content
   weatherInfoDiv.innerHTML = `
         <div class="weather-info">
             <div class="weather-item">
@@ -454,12 +244,17 @@ function displayWeatherInfo(data) {
 }
 
 // ====================
-// AIR QUALITY FUNCTIONS
+// SECTION: AIR QUALITY DATA
 // ====================
+// Purpose: Fetch air quality from Open-Meteo Air Quality API (Free, No API Key!)
+// Input: latitude and longitude (numbers)
+// Output: PM2.5 value and AQI status from real API
 
 /**
- * Fetches air quality data from Open-Meteo Air Quality API
- * CONCEPTS DEMONSTRATED: API calls, error handling, conditional returns
+ * Fetches air quality data from Open-Meteo Air Quality API (Free, No API Key!)
+ * @param {number} latitude - Latitude of the city
+ * @param {number} longitude - Longitude of the city
+ * @returns {object} Air quality data object from real API
  */
 async function fetchAirQualityData(latitude, longitude) {
   try {
@@ -473,16 +268,16 @@ async function fetchAirQualityData(latitude, longitude) {
       throw new Error(`Air Quality API error: ${response.status}`);
     }
 
+    // Convert response to JSON - REAL API DATA ONLY
     const data = await response.json();
     console.log("🌬️ Air Quality API Raw Data:", data);
 
-    /* 
-     * CONCEPT: NULL/UNDEFINED CHECKING
-     * - Checking if data exists before using it
-     * - null and undefined represent "no value"
-     * - Prevents runtime errors
-     */
-    if (!data.current || data.current.pm2_5 === null || data.current.pm2_5 === undefined) {
+    // Extract PM2.5 and AQI from real API response
+    if (
+      !data.current ||
+      data.current.pm2_5 === null ||
+      data.current.pm2_5 === undefined
+    ) {
       return {
         pm25: null,
         aqi: null,
@@ -522,17 +317,11 @@ async function fetchAirQualityData(latitude, longitude) {
 
 /**
  * Displays air quality information in the air quality card
- * CONCEPTS DEMONSTRATED: Conditional rendering, CSS classes
+ * @param {object} data - Air quality data object
  */
 function displayAirQuality(data) {
   const airQualityInfoDiv = document.getElementById("airQualityInfo");
 
-  /* 
-   * CONCEPT: EARLY RETURN PATTERN
-   * - Check for invalid data first
-   * - Return early to avoid complex nested if statements
-   * - Makes code more readable
-   */
   if (!data.pm25) {
     airQualityInfoDiv.innerHTML = `
             <div class="air-quality-info">
@@ -560,18 +349,15 @@ function displayAirQuality(data) {
     `;
 }
 
-/* 
- * CONCEPT: MATHEMATICAL CALCULATIONS AND CONDITIONALS
- * - Complex if-else chains for different ranges
- * - Mathematical formulas for AQI calculation
- * - Rounding numbers with Math.round()
- */
 /**
  * Calculates Air Quality Index (AQI) from PM2.5 value
- * CONCEPTS DEMONSTRATED: Complex conditionals, mathematical operations
+ * Simplified AQI calculation for educational purposes
+ * @param {number} pm25 - PM2.5 value in μg/m³
+ * @returns {number} AQI value
  */
 function calculateAQI(pm25) {
   // Simplified AQI calculation
+  // Real AQI calculation is more complex, but this gives a good approximation
   if (pm25 <= 12) {
     return Math.round((pm25 / 12) * 50); // Good (0-50)
   } else if (pm25 <= 35.4) {
@@ -587,7 +373,8 @@ function calculateAQI(pm25) {
 
 /**
  * Gets AQI status text based on AQI value
- * CONCEPTS DEMONSTRATED: Range checking with if-else
+ * @param {number} aqi - AQI value
+ * @returns {string} Status text
  */
 function getAQIStatus(aqi) {
   if (aqi <= 50) {
@@ -605,14 +392,10 @@ function getAQIStatus(aqi) {
 
 /**
  * Gets CSS class name for AQI status
- * CONCEPTS DEMONSTRATED: String methods, conditional logic
+ * @param {string} status - Status text
+ * @returns {string} CSS class name
  */
 function getStatusClass(status) {
-  /* 
-   * CONCEPT: STRING METHODS
-   * - includes(): Checks if string contains substring
-   * - Case-sensitive matching
-   */
   if (status.includes("Good")) {
     return "status-good";
   } else if (status.includes("Moderate")) {
@@ -623,28 +406,22 @@ function getStatusClass(status) {
 }
 
 // ====================
-// CHART.JS VISUALIZATION
+// SECTION: CHART.JS VISUALIZATION
 // ====================
-/* 
- * CONCEPT: EXTERNAL LIBRARIES
- * - Chart.js: External library for creating charts
- * - Loaded via CDN in HTML file
- * - Provides Chart constructor and methods
- */
+// Purpose: Create bar chart showing temperature, humidity, and wind speed
+// Uses Chart.js library (loaded via CDN in HTML)
 
 /**
  * Creates a bar chart using Chart.js
- * CONCEPTS DEMONSTRATED: Object configuration, array methods, Chart.js API
+ * Shows temperature, humidity, and wind speed
+ * @param {object} weatherData - Weather data object
+ * @param {object} airQualityData - Air quality data object
  */
 function createChart(weatherData, airQualityData) {
   // Get canvas element
   const ctx = document.getElementById("dataChart");
 
-  /* 
-   * CONCEPT: OBJECT CLEANUP
-   * - Destroy previous chart instance to prevent memory leaks
-   * - Check if object exists before calling methods
-   */
+  // Destroy previous chart if it exists
   if (dataChart) {
     dataChart.destroy();
   }
@@ -657,11 +434,7 @@ function createChart(weatherData, airQualityData) {
     weatherData.windSpeed,
   ];
 
-  /* 
-   * CONCEPT: CONDITIONAL ARRAY MANIPULATION
-   * - Adding elements to arrays based on conditions
-   * - push(): Adds elements to end of array
-   */
+  // Add PM2.5 if available
   if (airQualityData.pm25) {
     labels.push("PM2.5 (μg/m³)");
     values.push(airQualityData.pm25);
@@ -675,12 +448,7 @@ function createChart(weatherData, airQualityData) {
     "rgba(244, 67, 54, 0.8)", // Red for PM2.5
   ];
 
-  /* 
-   * CONCEPT: OBJECT INSTANTIATION AND CONFIGURATION
-   * - new Chart(): Creates new chart instance
-   * - Complex configuration object
-   * - Nested objects for different chart options
-   */
+  // Create new chart
   dataChart = new Chart(ctx, {
     type: "bar",
     data: {
@@ -743,35 +511,440 @@ function createChart(weatherData, airQualityData) {
 }
 
 // ====================
-// UI HELPER FUNCTIONS
+// SECTION: UI HELPER FUNCTIONS
 // ====================
+// Purpose: Show/hide loading, errors, and clear dashboard
 
 /**
  * Shows or hides the loading spinner
- * CONCEPTS DEMONSTRATED: DOM style manipulation, boolean parameters
+ * @param {boolean} show - Whether to show the spinner
  */
 function showLoading(show) {
   const spinner = document.getElementById("loadingSpinner");
-  /* 
-   * CONCEPT: TERNARY OPERATOR FOR STYLE CHANGES
-   * - Conditional CSS property assignment
-   * - show ? "block" : "none" sets display property
-   */
   spinner.style.display = show ? "block" : "none";
+}
+
+// ====================
+// SECTION: HOURLY DATA FETCHING
+// ====================
+
+/**
+ * Fetches hourly weather data for 24 hours
+ * @param {number} latitude - Latitude
+ * @param {number} longitude - Longitude
+ * @returns {object} Hourly weather data
+ */
+async function fetchHourlyWeatherData(latitude, longitude) {
+  try {
+    const url = `${OPENWEATHER_BASE_URL}?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,relative_humidity_2m,weather_code,precipitation&forecast_days=1&timezone=auto`;
+    console.log("🌡️ Hourly Weather API URL:", url);
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Hourly Weather API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("🌡️ Hourly Weather Data:", data);
+    return data;
+  } catch (error) {
+    console.warn("Hourly weather data not available:", error.message);
+    return null;
+  }
+}
+
+/**
+ * Fetches hourly air quality data for 24 hours
+ * @param {number} latitude - Latitude
+ * @param {number} longitude - Longitude
+ * @returns {object} Hourly air quality data
+ */
+async function fetchHourlyAirQualityData(latitude, longitude) {
+  try {
+    const url = `${AIR_QUALITY_BASE_URL}?latitude=${latitude}&longitude=${longitude}&hourly=pm2_5,pm10,ozone,nitrogen_dioxide,carbon_monoxide&forecast_days=1&timezone=auto`;
+    console.log("🌬️ Hourly Air Quality API URL:", url);
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Hourly Air Quality API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("🌬️ Hourly Air Quality Data:", data);
+    return data;
+  } catch (error) {
+    console.warn("Hourly air quality data not available:", error.message);
+    return null;
+  }
+}
+
+// ====================
+// SECTION: CHART CREATION FUNCTIONS
+// ====================
+
+/**
+ * Creates Air Quality Composition Pie Chart
+ * @param {object} currentData - Current air quality data
+ * @param {object} hourlyData - Hourly air quality data from API
+ */
+function createAirQualityPieChart(currentData, hourlyData) {
+  const ctx = document.getElementById("airQualityPieChart");
+  if (!ctx) return;
+
+  // Destroy previous chart if exists
+  if (airQualityPieChart) {
+    airQualityPieChart.destroy();
+  }
+
+  // Get values from hourly data - use first hour's data or current if available
+  let pm25 = 0,
+    pm10 = 0,
+    ozone = 0,
+    no2 = 0,
+    co = 0;
+
+  if (hourlyData && hourlyData.hourly) {
+    // Use the most recent (first) hour's data
+    const hourly = hourlyData.hourly;
+    if (hourly.pm2_5 && hourly.pm2_5.length > 0) {
+      pm25 = hourly.pm2_5[0] || 0;
+    }
+    if (hourly.pm10 && hourly.pm10.length > 0) {
+      pm10 = hourly.pm10[0] || 0;
+    }
+    if (hourly.ozone && hourly.ozone.length > 0) {
+      ozone = hourly.ozone[0] || 0;
+    }
+    if (hourly.nitrogen_dioxide && hourly.nitrogen_dioxide.length > 0) {
+      no2 = hourly.nitrogen_dioxide[0] || 0;
+    }
+    if (hourly.carbon_monoxide && hourly.carbon_monoxide.length > 0) {
+      co = hourly.carbon_monoxide[0] || 0;
+    }
+  } else if (hourlyData && hourlyData.current) {
+    // Fallback to current data
+    pm25 = hourlyData.current.pm2_5 || 0;
+    pm10 = hourlyData.current.pm10 || 0;
+    ozone = hourlyData.current.ozone || 0;
+    no2 = hourlyData.current.nitrogen_dioxide || 0;
+    co = hourlyData.current.carbon_monoxide || 0;
+  } else if (currentData && currentData.pm25) {
+    // Last fallback
+    pm25 = currentData.pm25;
+  }
+
+  // If all values are 0, don't create chart
+  if (pm25 === 0 && pm10 === 0 && ozone === 0 && no2 === 0 && co === 0) {
+    console.warn("No air quality composition data available");
+    return;
+  }
+
+  airQualityPieChart = new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels: ["PM2.5", "PM10", "Ozone", "NO2", "CO"],
+      datasets: [
+        {
+          data: [pm25, pm10, ozone, no2, co],
+          backgroundColor: [
+            "rgba(244, 67, 54, 0.8)", // Red for PM2.5
+            "rgba(255, 152, 0, 0.8)", // Orange for PM10
+            "rgba(33, 150, 243, 0.8)", // Blue for Ozone
+            "rgba(76, 175, 80, 0.8)", // Green for NO2
+            "rgba(156, 39, 176, 0.8)", // Purple for CO
+          ],
+          borderColor: [
+            "rgba(244, 67, 54, 1)",
+            "rgba(255, 152, 0, 1)",
+            "rgba(33, 150, 243, 1)",
+            "rgba(76, 175, 80, 1)",
+            "rgba(156, 39, 176, 1)",
+          ],
+          borderWidth: 2,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          top: 10,
+          bottom: 10,
+        },
+      },
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: {
+            boxWidth: 12,
+            padding: 8,
+            font: {
+              size: 11,
+            },
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              return (
+                context.label + ": " + context.parsed.toFixed(2) + " μg/m³"
+              );
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+/**
+ * Creates PM2.5 Trend Line Chart (24 hours)
+ * @param {object} hourlyData - Hourly air quality data from API
+ */
+function createAirQualityLineChart(hourlyData) {
+  if (!hourlyData || !hourlyData.hourly) {
+    console.warn("No hourly air quality data for line chart");
+    return;
+  }
+
+  const ctx = document.getElementById("airQualityLineChart");
+  if (!ctx) return;
+
+  // Destroy previous chart if exists
+  if (airQualityLineChart) {
+    airQualityLineChart.destroy();
+  }
+
+  // Get last 24 hours of data
+  const times = hourlyData.hourly.time.slice(0, 24);
+  const pm25Values = hourlyData.hourly.pm2_5.slice(0, 24);
+
+  // Format time labels (show only hours)
+  const timeLabels = times.map((time) => {
+    const date = new Date(time);
+    return date.getHours() + ":00";
+  });
+
+  airQualityLineChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: timeLabels,
+      datasets: [
+        {
+          label: "PM2.5 (μg/m³)",
+          data: pm25Values,
+          borderColor: "rgba(244, 67, 54, 1)",
+          backgroundColor: "rgba(244, 67, 54, 0.1)",
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: "top",
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: "PM2.5 (μg/m³)",
+          },
+        },
+        x: {
+          title: {
+            display: true,
+            text: "Time (Hours)",
+          },
+        },
+      },
+    },
+  });
+}
+
+/**
+ * Creates Weather Conditions Pie Chart
+ * @param {object} hourlyData - Hourly weather data from API
+ */
+function createWeatherPieChart(hourlyData) {
+  if (!hourlyData || !hourlyData.hourly) {
+    console.warn("No hourly weather data for pie chart");
+    return;
+  }
+
+  const ctx = document.getElementById("weatherPieChart");
+  if (!ctx) return;
+
+  // Destroy previous chart if exists
+  if (weatherPieChart) {
+    weatherPieChart.destroy();
+  }
+
+  // Count weather conditions from last 24 hours
+  const weatherCodes = hourlyData.hourly.weather_code.slice(0, 24);
+  const conditionCounts = {
+    Clear: 0,
+    Cloudy: 0,
+    Rainy: 0,
+    Foggy: 0,
+    Other: 0,
+  };
+
+  weatherCodes.forEach((code) => {
+    if (code === 0 || code === 1) {
+      conditionCounts.Clear++;
+    } else if (code === 2 || code === 3) {
+      conditionCounts.Cloudy++;
+    } else if (code >= 61 && code <= 82) {
+      conditionCounts.Rainy++;
+    } else if (code === 45 || code === 48) {
+      conditionCounts.Foggy++;
+    } else {
+      conditionCounts.Other++;
+    }
+  });
+
+  weatherPieChart = new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels: Object.keys(conditionCounts).filter(
+        (key) => conditionCounts[key] > 0
+      ),
+      datasets: [
+        {
+          data: Object.values(conditionCounts).filter((val) => val > 0),
+          backgroundColor: [
+            "rgba(255, 193, 7, 0.8)", // Yellow for Clear
+            "rgba(158, 158, 158, 0.8)", // Gray for Cloudy
+            "rgba(33, 150, 243, 0.8)", // Blue for Rainy
+            "rgba(189, 189, 189, 0.8)", // Light Gray for Foggy
+            "rgba(117, 117, 117, 0.8)", // Dark Gray for Other
+          ],
+          borderColor: [
+            "rgba(255, 193, 7, 1)",
+            "rgba(158, 158, 158, 1)",
+            "rgba(33, 150, 243, 1)",
+            "rgba(189, 189, 189, 1)",
+            "rgba(117, 117, 117, 1)",
+          ],
+          borderWidth: 2,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "bottom",
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = ((context.parsed / total) * 100).toFixed(1);
+              return (
+                context.label +
+                ": " +
+                context.parsed +
+                " hours (" +
+                percentage +
+                "%)"
+              );
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+/**
+ * Creates Temperature Trend Line Chart (24 hours)
+ * @param {object} hourlyData - Hourly weather data from API
+ */
+function createTemperatureLineChart(hourlyData) {
+  if (!hourlyData || !hourlyData.hourly) {
+    console.warn("No hourly weather data for temperature chart");
+    return;
+  }
+
+  const ctx = document.getElementById("temperatureLineChart");
+  if (!ctx) return;
+
+  // Destroy previous chart if exists
+  if (temperatureLineChart) {
+    temperatureLineChart.destroy();
+  }
+
+  // Get last 24 hours of data
+  const times = hourlyData.hourly.time.slice(0, 24);
+  const temperatures = hourlyData.hourly.temperature_2m.slice(0, 24);
+
+  // Format time labels (show only hours)
+  const timeLabels = times.map((time) => {
+    const date = new Date(time);
+    return date.getHours() + ":00";
+  });
+
+  temperatureLineChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: timeLabels,
+      datasets: [
+        {
+          label: "Temperature (°C)",
+          data: temperatures,
+          borderColor: "rgba(33, 150, 243, 1)",
+          backgroundColor: "rgba(33, 150, 243, 0.1)",
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: "top",
+        },
+      },
+      scales: {
+        y: {
+          title: {
+            display: true,
+            text: "Temperature (°C)",
+          },
+        },
+        x: {
+          title: {
+            display: true,
+            text: "Time (Hours)",
+          },
+        },
+      },
+    },
+  });
 }
 
 /**
  * Shows error message to user
- * CONCEPTS DEMONSTRATED: DOM manipulation, CSS classes
+ * @param {string} message - Error message to display
  */
 function showError(message) {
   const errorDiv = document.getElementById("errorMessage");
   errorDiv.textContent = message;
-  /* 
-   * CONCEPT: CSS CLASS MANIPULATION
-   * - classList.add(): Adds CSS class to element
-   * - Used for showing/hiding elements with CSS transitions
-   */
   errorDiv.classList.add("show");
 }
 
@@ -785,11 +958,12 @@ function hideError() {
 
 /**
  * Clears all data from dashboard
- * CONCEPTS DEMONSTRATED: Multiple DOM updates, object cleanup
  */
 function clearDashboard() {
-  document.getElementById("weatherInfo").innerHTML = '<p class="placeholder">Loading...</p>';
-  document.getElementById("airQualityInfo").innerHTML = '<p class="placeholder">Loading...</p>';
+  document.getElementById("weatherInfo").innerHTML =
+    '<p class="placeholder">Loading...</p>';
+  document.getElementById("airQualityInfo").innerHTML =
+    '<p class="placeholder">Loading...</p>';
 
   // Clear all charts
   if (dataChart) {
@@ -815,43 +989,30 @@ function clearDashboard() {
 }
 
 // ====================
-// UTILITY FUNCTIONS
+// SECTION: UTILITY FUNCTIONS
 // ====================
 
 /**
  * Capitalizes the first letter of a string
- * CONCEPTS DEMONSTRATED: String methods, concatenation
+ * @param {string} str - String to capitalize
+ * @returns {string} Capitalized string
  */
 function capitalizeFirst(str) {
-  /* 
-   * CONCEPT: STRING METHODS
-   * - charAt(0): Gets first character
-   * - toUpperCase(): Converts to uppercase
-   * - slice(1): Gets rest of string from index 1
-   * - String concatenation with +
-   */
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 // ====================
-// THEME TOGGLE FUNCTIONS
+// SECTION: THEME TOGGLE
 // ====================
 
 /**
  * Toggles between light and dark theme
- * CONCEPTS DEMONSTRATED: DOM attributes, localStorage, conditional logic
  */
 function toggleTheme() {
   const root = document.documentElement;
   const currentTheme = root.getAttribute("data-theme");
   const newTheme = currentTheme === "light" ? "dark" : "light";
 
-  /* 
-   * CONCEPT: DOM ATTRIBUTES AND LOCAL STORAGE
-   * - setAttribute(): Sets HTML attribute
-   * - localStorage: Browser storage that persists between sessions
-   * - setItem(): Saves data to localStorage
-   */
   root.setAttribute("data-theme", newTheme);
   localStorage.setItem("theme", newTheme);
 
@@ -866,14 +1027,8 @@ function toggleTheme() {
 
 /**
  * Loads saved theme preference
- * CONCEPTS DEMONSTRATED: localStorage retrieval, default values
  */
 function loadTheme() {
-  /* 
-   * CONCEPT: LOCAL STORAGE RETRIEVAL
-   * - getItem(): Gets data from localStorage
-   * - || "dark": Default value if nothing saved
-   */
   const savedTheme = localStorage.getItem("theme") || "dark";
   const root = document.documentElement;
   root.setAttribute("data-theme", savedTheme);
@@ -883,59 +1038,4 @@ function loadTheme() {
   if (themeIcon) {
     themeIcon.textContent = savedTheme === "dark" ? "🌙" : "☀️";
   }
-}
-
-// ====================
-// ADDITIONAL CHART FUNCTIONS (Simplified for brevity)
-// ====================
-
-/**
- * Fetches hourly weather data for 24 hours
- */
-async function fetchHourlyWeatherData(latitude, longitude) {
-  try {
-    const url = `${OPENWEATHER_BASE_URL}?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,relative_humidity_2m,weather_code,precipitation&forecast_days=1&timezone=auto`;
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Hourly Weather API error: ${response.status}`);
-    return await response.json();
-  } catch (error) {
-    console.warn("Hourly weather data not available:", error.message);
-    return null;
-  }
-}
-
-/**
- * Fetches hourly air quality data for 24 hours
- */
-async function fetchHourlyAirQualityData(latitude, longitude) {
-  try {
-    const url = `${AIR_QUALITY_BASE_URL}?latitude=${latitude}&longitude=${longitude}&hourly=pm2_5,pm10,ozone,nitrogen_dioxide,carbon_monoxide&forecast_days=1&timezone=auto`;
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Hourly Air Quality API error: ${response.status}`);
-    return await response.json();
-  } catch (error) {
-    console.warn("Hourly air quality data not available:", error.message);
-    return null;
-  }
-}
-
-// Simplified chart creation functions (basic structure shown)
-function createAirQualityPieChart(currentData, hourlyData) {
-  // Creates pie chart showing air quality composition
-  console.log("Creating air quality pie chart...");
-}
-
-function createAirQualityLineChart(hourlyData) {
-  // Creates line chart showing PM2.5 trend over 24 hours
-  console.log("Creating air quality line chart...");
-}
-
-function createWeatherPieChart(hourlyData) {
-  // Creates pie chart showing weather conditions distribution
-  console.log("Creating weather pie chart...");
-}
-
-function createTemperatureLineChart(hourlyData) {
-  // Creates line chart showing temperature trend over 24 hours
-  console.log("Creating temperature line chart...");
 }
