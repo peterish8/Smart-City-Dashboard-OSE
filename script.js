@@ -137,7 +137,7 @@ async function fetchHourlyData(coords, type) {
 // Weather Code to Description Mapping
 function getWeatherDescription(code) {
     const codes = {
-        0: "clear sky", 1: "mainly clear", 2: "partly cloudy", 3: "overcast",
+        0: "clear sky", 1: "mainly clear", 2: "partly cloudy", 3:"overcast",
         45: "foggy", 48: "depositing rime fog", 51: "light drizzle", 53: "moderate drizzle",
         55: "dense drizzle", 61: "slight rain", 63: "moderate rain", 65: "heavy rain",
         71: "slight snow", 73: "moderate snow", 75: "heavy snow", 80: "slight rain showers",
@@ -148,6 +148,8 @@ function getWeatherDescription(code) {
 }
 
 // AQI Calculations
+// Official formula : AQI = ((AQI_high - AQI_low) / (PM_high - PM_low)) * (PM_actual - PM_low) + AQI_low
+
 function calculateAQI(pm25) {
     if (pm25 <= 12) return Math.round((pm25 / 12) * 50);
     if (pm25 <= 35.4) return Math.round(50 + ((pm25 - 12) / 23.4) * 50);
@@ -176,6 +178,7 @@ function displayData(weather, airQuality) {
     displayAirQuality(airQuality);
 }
 
+// Weather Information display:
 function displayWeatherInfo(data) {
     const weatherInfoDiv = document.getElementById("weatherInfo");
     weatherInfoDiv.innerHTML = `
@@ -204,6 +207,7 @@ function displayWeatherInfo(data) {
     `;
 }
 
+// Air Quality Information display:
 function displayAirQuality(data) {
     const airQualityInfoDiv = document.getElementById("airQualityInfo");
     
@@ -227,7 +231,7 @@ function displayAirQuality(data) {
     `;
 }
 
-// Chart Creation Functions
+// Chart Creation Functions (All charts are called here):
 function createAllCharts(weather, airQuality, hourlyWeather, hourlyAir) {
     createChart(weather, airQuality);
     createPieChart("airQualityPieChart", getAirQualityPieData(airQuality, hourlyAir), "Air Quality Composition");
@@ -236,6 +240,7 @@ function createAllCharts(weather, airQuality, hourlyWeather, hourlyAir) {
     createLineChart("temperatureLineChart", getTemperatureLineData(hourlyWeather), "Temperature Trend", "rgba(33, 150, 243, 1)");
 }
 
+// Data Chart Creation: (Bar Graph):
 function createChart(weather, airQuality) {
     const ctx = document.getElementById("dataChart");
     if (charts.dataChart) charts.dataChart.destroy();
@@ -278,6 +283,7 @@ function createChart(weather, airQuality) {
     });
 }
 
+// Pie Chart Creation:
 function createPieChart(canvasId, data, title) {
     const ctx = document.getElementById(canvasId);
     if (!ctx || !data) return;
@@ -298,6 +304,7 @@ function createPieChart(canvasId, data, title) {
     });
 }
 
+// Line Chart Creation:
 function createLineChart(canvasId, data, title, color) {
     const ctx = document.getElementById(canvasId);
     if (!ctx || !data) return;
@@ -332,7 +339,7 @@ function createLineChart(canvasId, data, title, color) {
     });
 }
 
-// Chart Data Preparation Functions
+// Chart Data Preparation Functions (gets data)
 function getAirQualityPieData(current, hourly) {
     let pm25 = 0, pm10 = 0, ozone = 0, no2 = 0, co = 0;
 
@@ -362,6 +369,7 @@ function getAirQualityPieData(current, hourly) {
     };
 }
 
+// Weather Pie Chart Data Preparation:
 function getWeatherPieData(hourly) {
     if (!hourly?.hourly?.weather_code) return null;
 
@@ -397,6 +405,7 @@ function getWeatherPieData(hourly) {
     };
 }
 
+// Air Quality Line Chart Data Preparation (gets data):
 function getAirQualityLineData(hourly) {
     if (!hourly?.hourly?.pm2_5) return null;
 
@@ -407,6 +416,7 @@ function getAirQualityLineData(hourly) {
     return { labels, values, label: "PM2.5 (μg/m³)", yLabel: "PM2.5 (μg/m³)" };
 }
 
+// Temperature Line Chart Data Preparation (gets data):
 function getTemperatureLineData(hourly) {
     if (!hourly?.hourly?.temperature_2m) return null;
 
@@ -418,12 +428,12 @@ function getTemperatureLineData(hourly) {
 }
 
 // UI Helper Functions
-function showLoading(show) {
+function showLoading(show) { // Shows/hides loading spinner
     const spinner = document.getElementById("loadingSpinner");
     if (spinner) spinner.style.display = show ? "block" : "none";
 }
 
-function showError(message) {
+function showError(message) { // Displays red error banner with custom message
     const errorDiv = document.getElementById("errorMessage");
     if (errorDiv) {
         errorDiv.textContent = message;
@@ -431,12 +441,12 @@ function showError(message) {
     }
 }
 
-function hideError() {
+function hideError() { // Hides the error banner from view
     const errorDiv = document.getElementById("errorMessage");
     if (errorDiv) errorDiv.classList.remove("show");
 }
 
-function clearDashboard() {
+function clearDashboard() { // Resets all content to "Loading..." and destroys charts
     const weatherInfo = document.getElementById("weatherInfo");
     const airQualityInfo = document.getElementById("airQualityInfo");
     
@@ -448,12 +458,12 @@ function clearDashboard() {
 }
 
 // Utility Functions
-function capitalizeFirst(str) {
+function capitalizeFirst(str) { // Makes first letter uppercase ("hello" → "Hello")
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 // Theme Functions
-function toggleTheme() {
+function toggleTheme() { // Switches between light/dark mode and saves preference
     const root = document.documentElement;
     const currentTheme = root.getAttribute("data-theme");
     const newTheme = currentTheme === "light" ? "dark" : "light";
@@ -467,7 +477,7 @@ function toggleTheme() {
     console.log("Theme switched to:", newTheme);
 }
 
-function loadTheme() {
+function loadTheme() { // Loads saved theme preference on page startup
     const savedTheme = localStorage.getItem("theme") || "dark";
     const root = document.documentElement;
     
