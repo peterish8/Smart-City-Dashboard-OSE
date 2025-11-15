@@ -147,57 +147,6 @@ header h1 {
   filter: brightness(1.2);
 }
 
-/* ====================
-   SEARCH SECTION
-   ==================== */
-.search-section {
-  max-width: 1200px;
-  width: 100%;
-  margin: 2rem auto;
-  padding: 0 1rem;
-}
-
-.search-container {
-  display: flex;
-  gap: 1rem;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-#cityInput {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
-  border: 2px solid var(--border-color);
-  border-radius: 8px;
-  outline: none;
-  transition: border-color 0.3s;
-}
-
-#cityInput:focus {
-  border-color: var(--primary-color);
-}
-
-#searchBtn {
-  padding: 0.75rem 2rem;
-  font-size: 1rem;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  font-weight: bold;
-}
-
-#searchBtn:hover {
-  background-color: #1976d2;
-}
-
-#searchBtn:active {
-  transform: scale(0.98);
-}
-
 .error-message {
   max-width: 1200px;
   width: 100%;
@@ -550,14 +499,6 @@ footer a:hover {
     font-size: 2rem;
   }
 
-  .search-container {
-    flex-direction: column;
-  }
-
-  #searchBtn {
-    width: 100%;
-  }
-
   .dashboard {
     grid-template-columns: 1fr;
   }
@@ -594,10 +535,6 @@ footer a:hover {
 @media (max-width: 480px) {
   header h1 {
     font-size: 1.5rem;
-  }
-
-  header p {
-    font-size: 0.9rem;
   }
 
   .card {
