@@ -341,19 +341,23 @@ function createLineChart(canvasId, data, title, color) {
 
 // Chart Data Preparation Functions (gets data)
 function getAirQualityPieData(current, hourly) {
+    // Start with all values as 0
     let pm25 = 0, pm10 = 0, ozone = 0, no2 = 0, co = 0;
 
+    // Try to get data from hourly API first
     if (hourly?.hourly) {
-        const h = hourly.hourly;
-        pm25 = h.pm2_5?.[0] || 0;
-        pm10 = h.pm10?.[0] || 0;
-        ozone = h.ozone?.[0] || 0;
-        no2 = h.nitrogen_dioxide?.[0] || 0;
-        co = h.carbon_monoxide?.[0] || 0;
-    } else if (current?.pm25) {
+        pm25 = hourly.hourly.pm2_5?.[0] || 0;
+        pm10 = hourly.hourly.pm10?.[0] || 0;
+        ozone = hourly.hourly.ozone?.[0] || 0;
+        no2 = hourly.hourly.nitrogen_dioxide?.[0] || 0;
+        co = hourly.hourly.carbon_monoxide?.[0] || 0;
+    } 
+    // If no hourly data, try current data as backup
+    else if (current?.pm25) {
         pm25 = current.pm25;
     }
 
+    // If no data available, return null
     if (pm25 === 0 && pm10 === 0 && ozone === 0 && no2 === 0 && co === 0) return null;
 
     return {
@@ -473,4 +477,14 @@ function toggleTheme() { // Switches between light/dark mode and saves preferenc
     
     const themeIcon = document.getElementById("themeIcon");
     if (themeIcon) themeIcon.textContent = newTheme === "dark" ? "🌙" : "☀️";
+}
+
+function loadTheme() { // Loads saved theme preference on page startup
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    const root = document.documentElement;
+    
+    root.setAttribute("data-theme", savedTheme);
+    
+    const themeIcon = document.getElementById("themeIcon");
+    if (themeIcon) themeIcon.textContent = savedTheme === "dark" ? "🌙" : "☀️";
 }
