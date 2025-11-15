@@ -264,8 +264,8 @@ function createChart(weather, airQuality) {
                 data: values,
                 backgroundColor: colors,
                 borderColor: colors.map(c => c.replace("0.8", "1")),
-                borderWidth: 2,
-                borderRadius: 8
+                borderWidth: 10,
+                borderRadius: 9
             }]
         },
         options: {
@@ -273,12 +273,9 @@ function createChart(weather, airQuality) {
             maintainAspectRatio: false,
             plugins: {
                 legend: { display: false },
-                title: { display: true, text: "City Data Comparison", font: { size: 18, weight: "bold" } }
+                title: { display: true, text: "Data Comparison", font: { size: 15, weight: "bold" } }
             },
-            scales: {
-                y: { beginAtZero: true },
-                x: { grid: { display: false } }
-            }
+
         }
     });
 }
@@ -296,6 +293,7 @@ function createPieChart(canvasId, data, title) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: { duration: 1500, easing: "easeOutQuart" },
             plugins: {
                 legend: { position: "bottom" },
                 title: { display: true, text: title }
@@ -328,6 +326,7 @@ function createLineChart(canvasId, data, title, color) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: { duration: 1500, easing: "easeOutQuart" },
             plugins: {
                 title: { display: true, text: title }
             },
