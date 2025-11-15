@@ -473,16 +473,4 @@ function toggleTheme() { // Switches between light/dark mode and saves preferenc
     
     const themeIcon = document.getElementById("themeIcon");
     if (themeIcon) themeIcon.textContent = newTheme === "dark" ? "🌙" : "☀️";
-    
-    console.log("Theme switched to:", newTheme);
-}
-
-function loadTheme() { // Loads saved theme preference on page startup
-    const savedTheme = localStorage.getItem("theme") || "dark";
-    const root = document.documentElement;
-    
-    root.setAttribute("data-theme", savedTheme);
-    
-    const themeIcon = document.getElementById("themeIcon");
-    if (themeIcon) themeIcon.textContent = savedTheme === "dark" ? "🌙" : "☀️";
 }
